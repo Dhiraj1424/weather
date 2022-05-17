@@ -13,44 +13,43 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-@override
+   double? latitude;
+   double? langitude;
+  @override
   void initState() {
     super.initState();
     getLocation();
   }
 
-
- void getLocation() async {
-   Location location=Location();
-  await location.getCurrentLocation();
-   print(location.latitute);
-  print(location.longitude);
+  void getLocation() async {
+    Location location = Location();
+    await location.getCurrentLocation();
+    latitude=location.latitute;
+    langitude=location.longitude;
+    getData();
   }
 
-void getData()async{
- http.Response response = await http.get(Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=London&appid=5b02e3682a9a245fdb045deb0c6d1e33'));
-if (response.statusCode == 200) {
-  String data=response.body;
-  // print(data);
- var condition=jsonDecode(data)['weather'][0]['id'];
- var temperature=jsonDecode(data)['main']['temp'];
- var cityName=jsonDecode(data)['name'];
- 
-
-}
-else{
-  print(response.statusCode);
-}
-
-
-}
-
+  void getData() async {
+    http.Response response = await http.get(Uri.parse(
+  'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$langitude&appid=5b02e3682a9a245fdb045deb0c6d1e33'));
+    if (response.statusCode == 200) {
+      String data = response.body;
+      // print(data);
+      var decodeData = jsonDecode(data);
+      var condition = decodeData['weather'][0]['id'];
+      var temperature = decodeData['main']['temp'];
+      var cityName = decodeData['name'];
+      print(cityName);
+      print(temperature);
+      print(condition);
+    } else {
+      print(response.statusCode);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-   getData();
-    return Scaffold(
-      
-    );
+    getData();
+    return Scaffold();
   }
 }
